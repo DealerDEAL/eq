@@ -1,0 +1,235 @@
+#include "c.h"
+
+Matrix::Matrix() {
+  rows_ = 0;
+  colums_ = 0;
+  matrix = {nullptr};
+}
+
+Matrix::Matrix(int rows, int colums){
+  rows_ = rows;
+  colums_ = colums;
+  matrix = Matrix_memory(rows, colums);//rows_, colums_, double** matrix);
+  Fill();//rows, colums, double** matrix);
+}
+
+double** Matrix::Matrix_memory(int rows, int colums){//int rows, int colums, double** matrix){
+  double** matrix = new double*[rows];
+  for(int i = 0; i < rows_; i++){
+    matrix[i] = new double[colums];
+  }
+  return matrix;
+}
+
+void Matrix::Fill(){//int rows, int colums, double** mattrix){
+  int i, j;
+  for(i = 0; i < rows_; i++){
+    for(j = 0; j < colums_; j++){
+      matrix[i][j] = 0.1;
+    }
+  }
+}
+
+void Matrix::Fill_other(){
+  double b = 0.2;
+  for(int i = 0; i < rows_; i++){
+    for(int j = 0; j< colums_; j++){
+      matrix[i][j] = b;
+    }
+  }
+}
+
+void Matrix::Output(){//int rows, int colums, double** mattrix) {
+  for(int i = 0; i < rows_; i++){
+    for(int j = 0; j< colums_; j++){
+      cout << matrix[i][j] << " ";
+    }
+    cout << endl;
+  }
+}
+
+bool Matrix::eq_matrix(const Matrix &other){
+  if(rows_ == other.rows_ && colums_ == other.colums_){
+    for(int i = 0; i < rows_; i++){
+      for(int j = 0; j< colums_; j++){
+        if(matrix[i][j] != other.matrix[i][j]){
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+void Matrix::Sum_Matrix(const Matrix &other){
+  if(rows_ == other.rows_ && colums_ == other.colums_){
+    for(int i = 0; i < rows_; i++){
+      for(int j = 0; j< colums_; j++){
+        matrix[i][j] = matrix[i][j] + other.matrix[i][j];
+      }
+    }
+  }
+  else {
+    string g;
+    g = ("non equal matrix size");
+    throw g;
+  }
+}
+
+void Matrix::Sub_Matrix(const Matrix &other){
+  if(rows_ == other.rows_ && colums_ == other.colums_){
+    for(int i = 0; i < rows_; i++){
+      for(int j = 0; j < colums_; j++){
+        matrix[i][j] = matrix[i][j] - other.matrix[i][j];
+      }
+    }
+  }
+  else {
+    string g;
+    g = ("non equal matrix size");
+    throw g;
+  }
+}
+
+void Matrix::Fill_part(const Matrix &other){
+  if(rows_ < other.rows_ || colums_ < other.colums_){
+    for(int i = 0; i < other.rows_; i++){
+      for(int j = 0; j < other.colums_; j++){
+          if(i > rows_ || j > colums_){
+            matrix[i][j] = 0;
+          }
+      }
+    }
+  }
+  if(rows_ > other.rows_ || colums_ > other.colums_){
+    for(int i = 0; i < rows_; i++){
+      for(int j = 0; j < colums_; j++){
+        if(i > other.rows_ || j > other.colums_){
+          other.matrix[i][j] = 0;
+        }
+      }
+    }
+  }
+}
+
+void Matrix::Mul_number(const double num){
+  for(int i = 0; i < rows_; i++){
+    for(int j = 0; j < colums_; j++){
+      matrix[i][j] = matrix[i][j] * num;
+    }
+  }
+}
+
+void Matrix::Mul_Matrix(const Matrix &other){
+  if(colums_ == other.rows_ && rows_ == other.colums_){
+    double c[colums_][colums_];
+    Matrix z(rows_, other.colums_);
+    for(int i = 0; i < other.rows_; i++){
+      for(int j = 0; j <colums_; j++){
+        double sum = 0;
+        for (int k = 0; k < rows_ ; k++) {
+          sum += matrix[i][k] * other.matrix[k][j];
+        }
+        c[i][j] = sum;
+        z.matrix[i][j] = move(c[i][j]);
+          // c[i][j] = matrix[i][j] * other.matrix[i][j] + matrix[i][j +  1] * other.matrix[i + 1][j];
+          // cout << c[i][j] << " ";
+        }
+      }
+    z.Output();
+    }
+  else{
+    string s;
+    s = ("non equal colums to rows");
+    throw s;
+  }
+}
+
+  void Matrix::Matrix_transpose(){
+    double c[rows_][colums_];
+    for(int i = 0; i < colums_; i++){
+      for(int j = 0; j < rows_; j++){
+        c[i][j] = matrix[j][i];
+        cout << c[i][j] << " ";
+      }
+      cout << endl;
+    }
+  }
+
+/*void Matrix::determinant(double** submatrix) {
+int det = 0;
+int** submatrix = new int*[rows_];
+for (int i = 0; i < rows_; ++i)
+submatrix[i] = new int[colums_];
+
+if (rows_ == 1)
+    cout << matrix[0][0];
+else if (rows_ == 2)
+    cout << ((matrix[0][0] * matrix[1][1]) - (matrix[1][0] * matrix[0][1]));
+else {
+    for (int x = 0; x < rows_; x++) {
+    int subi = 0;
+    for (int i = 1; i < rows_; i++) {
+    int subj = 0;
+    for (int j = 0; j < rows_; j++) {
+    if (j == x)
+    continue;
+    submatrix[subi][subj] = matrix[i][j];
+    subj++;
+    }
+    subi++;
+    }
+    det = det + (pow(-1, x) * matrix[0][x] * determinant(submatrix, rows_ - 1));
+    }
+    }
+
+    for (int i = 0; i < rows_; ++i)
+    delete [] submatrix[i];
+    delete [] submatrix;
+
+    cout << det;
+}*/
+
+int Matrix::get_rows() {return rows_;}
+int Matrix::get_colums() {return colums_;}
+
+  int main() {
+    Matrix k(3, 4);
+    Matrix l(3, 4);
+    //const double n = 0.5;
+    l.Fill_other();
+    //k.Matrix_transpose();
+    //k.Output();
+    /*try{
+      k.Mul_Matrix(l);
+    }
+      catch(string s){
+        cout << s << endl;
+      }*/
+    alg();
+    //k.Output();//int rows, int colums, int mattrix);
+    //cout << k.eq_matrix(l); eq
+    /*try{
+      k.Sub_Matrix(l); sub and sum
+      k.Output();
+    }
+    catch(string g){
+      cout << g << endl;
+      k.Fill_part(l);
+      k.Output();
+      l.Output();
+    }*/
+    //k.Mul_number(n); mul
+    //k.Output();
+    /*try{
+      k.Mul_Matrix(l);
+    }
+    catch(string s){
+      cout << s;
+    }*/
+    //k.Matrix_transpose();
+    //k.Output();
+
+    
+    return 0;
+  }
